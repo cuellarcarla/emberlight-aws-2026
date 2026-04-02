@@ -17,7 +17,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load Gemini Api Key for chat app
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+#GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,17 +33,30 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "supersecret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.emberlight.karura.cat','emberlight.karura.cat', '54.209.17.170']
+#ALLOWED_HOSTS = ['emberlight.mehdi.cat','emberlight.mehdi.cat', '54.209.17.170']
 
+ALLOWED_HOSTS = [
+    'emberlight.mehdi.cat',
+    'emberlight.mehdi.cat', 
+    '54.209.17.170',
+    '127.0.0.1',
+    'localhost'
+]
 # Static files (CSS, JavaScript, Images)
+#STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, '../../staticfiles')  # Where collectstatic will put files
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, '../../staticfiles')  # Where collectstatic will put files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # For React's built static files
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../../../frontend/build/static'),  # Path to React's built static files
-]
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, '../../../frontend/build/static'),  # Path to React's built static files
+#]
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '..', '..', 'frontend', 'build', 'static'),
+]
 
 # Application definition
 
@@ -81,10 +95,14 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True # To prevent errors like "blocked by CORS policy"
-CORS_ALLOWED_ORIGINS = [
+#CORS_ALLOWED_ORIGINS = [
     #"https://yourdomain.com",  # For React EC2 or Amplify deployment. Not in use yet.
     #"http://localhost:3000",
-    "https://www.emberlight.karura.cat"    # For development
+#    "https://emberlight.mehdi.cat"    # For development
+#]
+CORS_ALLOWED_ORIGINS = [
+    "https://emberlight.mehdi.cat",
+    "https://emberlight.mehdi.cat"
 ]
 CORS_EXPOSE_HEADERS = ['X-CSRFToken']
 
@@ -92,9 +110,14 @@ CORS_EXPOSE_HEADERS = ['X-CSRFToken']
 SESSION_COOKIE_SECURE = True    # HTTPS only
 CSRF_COOKIE_SECURE = True       # HTTPS only
 #CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+#CSRF_TRUSTED_ORIGINS = [
+#    "https://emberlight.mehdi.cat",
+#    "https://emberlight.mehdi.cat"
+#]
+
 CSRF_TRUSTED_ORIGINS = [
-    "https://www.emberlight.karura.cat",
-    "https://emberlight.karura.cat"
+    "https://emberlight.mehdi.cat",
+    "https://emberlight.mehdi.cat"
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -174,9 +197,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { getCookie } from "../utils/cookies";
 
 const AuthContext = createContext();
-const API_BASE_URL = "https://www.emberlight.karura.cat";
+const API_BASE_URL = "https://emberlight.mehdi.cat";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -152,7 +152,7 @@ export const AuthProvider = ({ children }) => {
   // NUEVO: Eliminar cuenta de usuario
   const deleteUser = async () => {
     try {
-      const response = await fetch(`https://www.emberlight.karura.cat/auth/users/${user.id}/delete/`, {
+      const response = await fetch(`https://emberlight.mehdi.cat/auth/users/${user.id}/delete/`, {
         method: 'DELETE',
         headers: { 
           "Content-Type": "application/json",

@@ -5,7 +5,7 @@ provider "aws" {
 # Variables
 locals {
   project_name = "emberlight"
-  domain_name  = "emberlight.karura.cat"
+  domain_name  = "emberlight.mehdi.cat"
 }
 
 # VPC y Red

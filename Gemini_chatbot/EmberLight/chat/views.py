@@ -4,10 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from .models import ChatSession, ChatLog
 from .serializers import ChatLogSerializer, ChatSessionSerializer
 from journal.models import JournalEntry
-from .utils import get_chat_model
+from .utils import send_message_with_history
 from datetime import datetime, timedelta
 
-# Retrieve all sessions
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_chat_sessions(request):
@@ -15,7 +14,6 @@ def get_chat_sessions(request):
     serializer = ChatSessionSerializer(sessions, many=True)
     return Response(serializer.data)
 
-# Create chat session
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def create_chat_session(request):
@@ -23,7 +21,6 @@ def create_chat_session(request):
     session = ChatSession.objects.create(user=request.user, title=title)
     return Response({"id": session.id, "title": session.title})
 
-# Chat history for each session
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_session_history(request, session_id):
@@ -35,7 +32,6 @@ def get_session_history(request, session_id):
     except ChatSession.DoesNotExist:
         return Response({"error": "Session not found"}, status=404)
 
-# Chat endpoint with chat sessions
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def chat(request, session_id):
@@ -48,62 +44,39 @@ def chat(request, session_id):
     if not message:
         return Response({"error": "Message is required"}, status=400)
 
-    # Retrieve previous 10 messages for context
-    previous_logs = ChatLog.objects.filter(
-        session=session
-    ).order_by("timestamp")[:10]
-
-    # Use an array to store those 10 messages
+    # Últimos 10 mensajes del historial guardado en BD
+    previous_logs = ChatLog.objects.filter(session=session).order_by("timestamp")[:10]
     chat_history = []
     for log in previous_logs:
-        chat_history.append({"role": "user", "parts": log.message})
+        chat_history.append({"role": "user",  "parts": log.message})
         chat_history.append({"role": "model", "parts": log.response})
 
-    # Retrieve the user's journal entries of this current week
+    # Entradas de diario de la última semana
     date_from = datetime.now() - timedelta(days=7)
     journal_entries = JournalEntry.objects.filter(
         user=request.user,
         date__gte=date_from
     ).order_by("-date")
 
-    # Create journal context message
-    journal_context = "Journal Entries Context:\n" + "\n".join(
+    journal_context = "Entradas del diario (última semana):\n" + "\n".join(
         f"{entry.date}: {entry.mood} - {entry.text}"
         for entry in journal_entries
     )
 
-    # We initialize chat with system message + journal context
-    model = get_chat_model()
-    chat = model.start_chat(history=[
-        {
-            "role": "user",
-            "parts": journal_context  # Journal context for first message
-        },
-        {
-            "role": "model", 
-            "parts": "I've reviewed the journal entries. How can I help?"
-        },
-        *chat_history  # Add conversation history
-    ])
-    
-    # Generate response from Gemini AI
     try:
-        response = chat.send_message(message)
-        ai_response = response.text
+        ai_response = send_message_with_history(chat_history, journal_context, message)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
-    
-    # Create chat log with context
+
     chat_log = ChatLog.objects.create(
         session=session,
         message=message,
         response=ai_response
     )
     chat_log.context_entries.set(journal_entries)
-    
+
     return Response({"response": ai_response})
 
-# Delete chat session
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
 def delete_chat_session(request, session_id):

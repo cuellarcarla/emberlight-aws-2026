@@ -39,10 +39,10 @@ deactivate nondestructive
 if [ "${OSTYPE:-}" = "cygwin" ] || [ "${OSTYPE:-}" = "msys" ] ; then
     # transform D:\path\to\venv to /d/path/to/venv on MSYS
     # and to /cygdrive/d/path/to/venv on Cygwin
-    export VIRTUAL_ENV=$(cygpath /home/ubuntu/EmberLight_Projecte2/Gemini_chatbot/EmberLight/venv)
+    export VIRTUAL_ENV=$(cygpath /home/ubuntu/emberlight-aws/Gemini_chatbot/EmberLight/venv)
 else
     # use the path as-is
-    export VIRTUAL_ENV=/home/ubuntu/EmberLight_Projecte2/Gemini_chatbot/EmberLight/venv
+    export VIRTUAL_ENV=/home/ubuntu/emberlight-aws/Gemini_chatbot/EmberLight/venv
 fi
 
 _OLD_VIRTUAL_PATH="$PATH"

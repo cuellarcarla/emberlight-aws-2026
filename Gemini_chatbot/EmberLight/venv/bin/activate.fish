@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/ubuntu/EmberLight_Projecte2/Gemini_chatbot/EmberLight/venv
+set -gx VIRTUAL_ENV /home/ubuntu/emberlight-aws/Gemini_chatbot/EmberLight/venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH
